@@ -16,7 +16,7 @@ func (state *OnChannelStateHandler) HandleCommand(command *irc.IrcCommand, bot *
 	switch command.Command {
 	case replies.RplJoin:
 		nicknameJoined := strings.Split(command.Source, "!")[0]
-		bot.Settings.Output <- commands.SendMessage(command.Target, fmt.Sprintf("Hello there, dear %s!", nicknameJoined))
+		bot.Write(commands.SendMessage(command.Target, fmt.Sprintf("Hello there, dear %s!", nicknameJoined)))
 	default:
 		log.Printf("Unhandled command [%s]", command)
 	}

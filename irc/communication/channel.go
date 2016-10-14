@@ -9,14 +9,21 @@ import (
 	"fmt"
 )
 
-type Channel struct {
+type Channel interface {
+	ReadLine() (string, error)
+	WriteLine(string) (error)
+}
+
+type TcpChannel struct {
+	Channel
+
 	socket net.Conn
 	reader *bufio.Reader
 	writer *bufio.Writer
 }
 
-func NewChannel(server string, port int) (*Channel) {
-	channel := new(Channel)
+func NewTcpChannel(server string, port int) (*TcpChannel) {
+	channel := new(TcpChannel)
 	err := channel.Open(server, port)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Failed to connect to %s:%d. Cause: %s", server, port, err))
@@ -24,29 +31,7 @@ func NewChannel(server string, port int) (*Channel) {
 	return channel
 }
 
-func (c *Channel) BindIOChannels(input chan string, output chan string) {
-	// constantly read from socket and put into input go channel
-	go func(readChannel chan string, pipe *Channel) {
-		for true {
-			line, err := pipe.ReadLine()
-			if err != nil {
-				log.Fatalf("Error when reading. Reason: [%s]", err)
-			} else {
-				readChannel <- line
-			}
-		}
-	}(input, c)
-
-	// constantly read from output go channel and write on socket
-	go func(channelToReadFrom chan string, pipe *Channel) {
-		for true {
-			pipe.WriteLine(<-channelToReadFrom)
-		}
-	}(output, c)
-
-}
-
-func (c *Channel) Open(server string, port int) (error) {
+func (c *TcpChannel) Open(server string, port int) (error) {
 	address := server + ":" + strconv.Itoa(port)
 	log.Println("Attempting to connect to ", address)
 
@@ -62,12 +47,11 @@ func (c *Channel) Open(server string, port int) (error) {
 	return nil
 }
 
-func (c *Channel) Close() {
-	c.WriteLine("QUIT interrupted\n")
+func (c *TcpChannel) Close() {
 	c.socket.Close()
 }
 
-func (c *Channel) ReadLine() (string, error) {
+func (c *TcpChannel) ReadLine() (string, error) {
 	line, err := c.reader.ReadString('\n')
 	if err != nil {
 		return "", err
@@ -79,7 +63,7 @@ func (c *Channel) ReadLine() (string, error) {
 	return line, nil
 }
 
-func (c *Channel) WriteLine(line string) (error) {
+func (c *TcpChannel) WriteLine(line string) (error) {
 	log.Printf("<<< %s", line)
 	_, err := c.writer.WriteString(line)
 	if err != nil {
