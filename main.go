@@ -10,6 +10,7 @@ import (
 
 func main() {
 	tcpChannel := communication.NewTcpChannel("irc.freenode.net", 6667)
+
 	defer tcpChannel.Close()
 
 	config := &bot.Config{
@@ -28,7 +29,7 @@ func registerShutdownHook(closeHandler func()) {
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
-		for _ = range signalChannel {
+		for range signalChannel {
 			closeHandler()
 		}
 	}()

@@ -2,6 +2,7 @@ package replies
 
 const (
 	CmdPing = "PING"
+	CmdPrivMsg = "PRIVMSG"
 )
 
 const (
@@ -13,11 +14,16 @@ const (
 	RplUserHost = "302"
 	RplIsOn = "303"
 	RplEndOfWhois = "318"
+	RplNoTopic = "331"
+	RplTopic = "332"
+	RplNameReply = "353"
+	RplEndOfNames = "366"
 	RplMotdStart = "375"
 	RplMotd = "372"
 	RplEndOfMotd = "376"
-	RplEndOfNames = "366"
 	RplJoin = "JOIN"
+	RplPart = "PART"
+	RplQuit = "QUIT"
 )
 
 const (
