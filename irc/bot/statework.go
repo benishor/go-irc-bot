@@ -29,7 +29,7 @@ func (state *OnChannelStateHandler) HandleCommand(command *irc.IrcCommand, bot *
 
 		stats := bot.GetChannelStats(channel)
 		stats.RemoveUser(irc.ParseIrcUser(user).Nickname)
-		log.Println("Current users on channel: ", stats.Users)
+		log.Printf("Current users on channel %s: %s", channel, stats.Users)
 
 		for _, v := range Plugins {
 			v.OnUserPart(bot, channel, user, partMessage);

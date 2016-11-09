@@ -14,6 +14,10 @@ func JoinChannel(channel string) (string) {
 	return fmt.Sprintf("JOIN %s\n", channel)
 }
 
+func PartChannel(channel string) (string) {
+	return fmt.Sprintf("PART %s\n", channel)
+}
+
 func SendMessage(destination string, message string) (string) {
 	return fmt.Sprintf("PRIVMSG %s :%s\n", destination, message)
 }

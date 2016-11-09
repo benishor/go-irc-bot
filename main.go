@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	//tcpChannel := communication.NewTcpChannel("irc.freenode.net", 6667)
-	tcpChannel := communication.NewTcpChannel("bucharest.ro.eu.undernet.org", 6667)
+	tcpChannel := communication.NewTcpChannel("irc.freenode.net", 6667)
+	//tcpChannel := communication.NewTcpChannel("bucharest.ro.eu.undernet.org", 6667)
 
 	defer tcpChannel.Close()
 

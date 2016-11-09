@@ -6,6 +6,7 @@ import (
 	"github.com/benishor/go-irc-bot/irc/commands"
 	"github.com/benishor/go-irc-bot/irc/replies"
 	"strings"
+	"time"
 )
 
 type JoinChannelStateHandler struct {
@@ -38,7 +39,6 @@ func (state *JoinChannelStateHandler) HandleCommand(command *irc.IrcCommand, bot
 			nickname, modes := irc.ParseNickWithModes(nickWithModes, bot.ServerSettings.Prefixes)
 			stats.AddUser(nickname, modes);
 		}
-
 	case replies.RplEndOfNames:
 		targetChannel := irc.ExtractChannelFromNamesReply(command.Target)
 		log.Println("Current users on channel: ", bot.Channels[targetChannel].Users)
@@ -48,6 +48,16 @@ func (state *JoinChannelStateHandler) HandleCommand(command *irc.IrcCommand, bot
 		}
 		// we really joined the channel. change state
 		bot.State = &OnChannelStateHandler{}
+	case replies.ErrBadChannelKey:
+		fallthrough
+	case replies.ErrBannedFromChan:
+		fallthrough
+	case replies.ErrChannelIsFull:
+		go func() {
+			// retry in a couple of seconds
+			time.Sleep(time.Duration(5) * time.Second)
+			bot.Write(commands.JoinChannel(bot.Config.Channel))
+		}()
 	default:
 		log.Printf("Unhandled command [%s]", command)
 	}
