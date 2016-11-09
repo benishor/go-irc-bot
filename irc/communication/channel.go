@@ -58,7 +58,7 @@ func (c *TcpChannel) ReadLine() (string, error) {
 	}
 
 	line = strings.TrimSpace(line)
-	//log.Printf(">>> %s\n", line)
+	log.Printf(">>> %s\n", line)
 
 	return line, nil
 }

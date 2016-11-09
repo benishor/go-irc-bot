@@ -6,10 +6,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	_ "github.com/benishor/go-irc-bot/irc/bot/plugins" // self registering plugins
 )
 
 func main() {
-	tcpChannel := communication.NewTcpChannel("irc.freenode.net", 6667)
+	//tcpChannel := communication.NewTcpChannel("irc.freenode.net", 6667)
+	tcpChannel := communication.NewTcpChannel("bucharest.ro.eu.undernet.org", 6667)
 
 	defer tcpChannel.Close()
 

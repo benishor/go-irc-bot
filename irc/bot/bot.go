@@ -7,6 +7,7 @@ import (
 	"github.com/benishor/go-irc-bot/irc/commands"
 	"log"
 	"github.com/benishor/go-irc-bot/irc/communication"
+	"fmt"
 )
 
 type Config struct {
@@ -16,13 +17,50 @@ type Config struct {
 	Server   string
 }
 
+type ChannelUser struct {
+	Nickname string
+	Modes    string
+}
+
+type ChannelStats struct {
+	Topic string
+	Modes string
+	Users []ChannelUser
+}
+
+func (user *ChannelUser) String() (string) {
+	return fmt.Sprintf("%s%s", user.Modes, user.Nickname);
+}
+
+func (stats *ChannelStats) AddUser(username, modes string) {
+	stats.Users = append(stats.Users, ChannelUser{
+		Nickname: username,
+		Modes: modes})
+}
+
+func (stats *ChannelStats) RemoveUser(nickname string) {
+	for k, channelUser := range stats.Users {
+		if channelUser.Nickname == nickname {
+			stats.Users = append(stats.Users[:k], stats.Users[k + 1:]...)
+			break;
+		}
+	}
+}
+
 type IrcBotStateHandler interface {
 	HandleCommand(command *irc.IrcCommand, bot *Bot)
 }
 
+type ServerConfig struct {
+	Prefixes string
+}
+
 type Bot struct {
 	State                IrcBotStateHandler
+	CurrentNickname      string
 	Config               *Config
+	Channels             map[string]*ChannelStats
+	ServerSettings       ServerConfig
 	quitChannel          chan bool
 	readChannel          chan string
 	writeChannel         chan string
@@ -32,7 +70,8 @@ type Bot struct {
 func NewBot(config *Config, communicationChannel communication.Channel) (*Bot) {
 	result := &Bot{
 		Config: config,
-		State : &RegistrationStateHandler{},
+		State: &RegistrationStateHandler{},
+		Channels: make(map[string]*ChannelStats),
 		quitChannel : make(chan bool, 1),
 		readChannel: make(chan string, 10),
 		writeChannel: make(chan string, 10),
@@ -81,7 +120,10 @@ func (bot *Bot) Run() {
 
 func (bot *Bot) Close() {
 	bot.Write("QUIT interrupted\n")
-	bot.quitChannel <- true
+	go func() {
+		time.Sleep(time.Duration(1) * time.Second)
+		bot.quitChannel <- true
+	}()
 }
 
 func (bot *Bot) Write(content string) {
@@ -100,3 +142,10 @@ func (bot*Bot) handleLine(line string) {
 	}
 }
 
+func (bot*Bot) GetChannelStats(channel string) (*ChannelStats) {
+	_, ok := bot.Channels[channel];
+	if !ok {
+		bot.Channels[channel] = new(ChannelStats)
+	}
+	return bot.Channels[channel];
+}

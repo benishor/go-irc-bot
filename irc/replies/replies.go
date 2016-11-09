@@ -24,10 +24,14 @@ const (
 	RplJoin = "JOIN"
 	RplPart = "PART"
 	RplQuit = "QUIT"
+	RplMode = "MODE"
 )
 
 const (
 	ErrNoMotd = "422"
 	ErrErronoeusNickname = "432"
 	ErrNicknameInUse = "433"
+	ErrChannelIsFull = "471"
+	ErrBannedFromChan = "474"
+	ErrBadChannelKey = "475"
 )
