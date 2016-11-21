@@ -22,12 +22,6 @@ type LastSeenPlugin struct {
 	bot.DefaultBotPlugin
 }
 
-//func (p*LastSeenPlugin) OnJoinChannel(bot *bot.Bot, channel string) {
-//}
-//
-//func (p*LastSeenPlugin) OnUserJoin(bot *bot.Bot, channel string, user string) {
-//}
-
 func (p*LastSeenPlugin) OnUserPart(bot *bot.Bot, channel string, user string, partMessage string) {
 	lastTool.set(user, channel, partMessage)
 }

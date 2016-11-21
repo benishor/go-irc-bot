@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	_ "github.com/benishor/go-irc-bot/irc/bot/plugins" // self registering plugins
+	_ "github.com/benishor/go-irc-bot/plugins" // self registering plugins
 )
 
 func main() {
