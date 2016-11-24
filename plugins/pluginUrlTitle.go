@@ -43,7 +43,7 @@ func getTitleForUrl(url string) string {
 	}
 
 	if response.ContentLength > 1 * 1024 * 1024 {
-		log.Printf("Dropping request for url %s due to large size: %l", url, response.ContentLength)
+		log.Printf("Dropping request for url %s due to large size: %d", url, response.ContentLength)
 		return ""
 	}
 
